@@ -1,6 +1,5 @@
 version: ~> 1.0
 language: c   
-arch: amd64
 os: linux
 dist: bionic
 env:
@@ -24,7 +23,32 @@ jobs:
         build_command_prepend: "./synclibs.sh && ./autogen.sh && ./configure"
         build_command: "make -j4"
         branch_pattern: master
+  - name: "Coverity"
+    arch: ppc64le
+    env:
+    - CONFIGURE_OPTIONS=""
+    - TARGET="coverity"
+    compiler: clang
+    group: edge
+    addons:
+      coverity_scan:
+        project:
+          name: "libyal/libqcow"
+          description: "Build submitted via Travis CI"
+        notification_email: joachim.metz@gmail.com
+        build_command_prepend: "./synclibs.sh && ./autogen.sh && ./configure"
+        build_command: "make -j4"
+        branch_pattern: master
   - name: "Linux with clang"
+    env:
+    - CONFIGURE_OPTIONS=""
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-clang"
+    compiler: clang
+    group: edge
+  - name: "Linux with clang on ppc64le"
+    arch: ppc64le
     env:
     - CONFIGURE_OPTIONS=""
     - CFLAGS="--coverage"
@@ -66,7 +90,26 @@ jobs:
     - TARGET="linux-gcc-wide-character-type"
     compiler: gcc
     group: edge
+  - name: "Linux with gcc and wide character type (wchar_t) support on ppc64le"
+    arch: ppc64le
+    env:
+    - CONFIGURE_OPTIONS="--enable-wide-character-type"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-wide-character-type"
+    compiler: gcc
+    group: edge
   - name: "Linux with gcc without optimization"
+    env:
+    - CONFIGURE_OPTIONS="--enable-shared=no --enable-wide-character-type"
+    - CFLAGS="--coverage -O0"
+    - CPPFLAGS="-DOPTIMIZATION_DISABLED"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-no-optimization"
+    compiler: gcc
+    group: edge
+  - name: "Linux with gcc without optimization on ppc64le"
+    arch: ppc64le
     env:
     - CONFIGURE_OPTIONS="--enable-shared=no --enable-wide-character-type"
     - CFLAGS="--coverage -O0"
@@ -83,7 +126,25 @@ jobs:
     - TARGET="linux-gcc-no-openssl"
     compiler: gcc
     group: edge
+  - name: "Linux with gcc without OpenSSL on ppc64le"
+    arch: ppc64le
+    env:
+    - CONFIGURE_OPTIONS="--with-openssl=no"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-no-openssl"
+    compiler: gcc
+    group: edge
   - name: "Linux with gcc with OpenSSL EVP"
+    env:
+    - CONFIGURE_OPTIONS="--enable-openssl-evp-cipher=yes --enable-openssl-evp-md=yes"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-openssl-evp"
+    compiler: gcc
+    group: edge
+  - name: "Linux with gcc with OpenSSL EVP on ppc64le"
+    arch: ppc64le
     env:
     - CONFIGURE_OPTIONS="--enable-openssl-evp-cipher=yes --enable-openssl-evp-md=yes"
     - CFLAGS="--coverage"
@@ -99,6 +160,15 @@ jobs:
     - TARGET="linux-gcc-openssl"
     compiler: gcc
     group: edge
+  - name: "Linux with gcc with OpenSSL non-EVP on ppc64le"
+    arch: ppc64le
+    env:
+    - CONFIGURE_OPTIONS="--enable-openssl-evp-cipher=no --enable-openssl-evp-md=no"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-openssl"
+    compiler: gcc
+    group: edge
   - name: "Linux with gcc and Python module"
     env:
     - CONFIGURE_OPTIONS="--enable-python"
@@ -107,7 +177,26 @@ jobs:
     - TARGET="linux-gcc-python"
     compiler: gcc
     group: edge
+  - name: "Linux with gcc and Python module on ppc64le"
+    arch: ppc64le
+    env:
+    - CONFIGURE_OPTIONS="--enable-python"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-python"
+    compiler: gcc
+    group: edge
   - name: "Linux with gcc and Python 2 module"
+    env:
+    - CONFIGURE_OPTIONS="--enable-python2"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - PYTHON_VERSION=2
+    - TARGET="linux-gcc-python2"
+    compiler: gcc
+    group: edge
+  - name: "Linux with gcc and Python 2 module on ppc64le"
+    arch: ppc64le
     env:
     - CONFIGURE_OPTIONS="--enable-python2"
     - CFLAGS="--coverage"
@@ -125,7 +214,24 @@ jobs:
     - TARGET="linux-gcc-python3"
     compiler: gcc
     group: edge
+  - name: "Linux with gcc and Python 3 module on ppc64le"
+    arch: ppc64le
+    env:
+    - CONFIGURE_OPTIONS="--enable-python3"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - PYTHON_VERSION=3
+    - TARGET="linux-gcc-python3"
+    compiler: gcc
+    group: edge
   - name: "Linux with gcc and Python 2 module (setup.py)"
+    env:
+    - TARGET="linux-gcc-python-setup-py"
+    compiler: gcc
+    group: edge
+    python: 2.7
+  - name: "Linux with gcc and Python 2 module (setup.py) on ppc64le"
+    arch: ppc64le
     env:
     - TARGET="linux-gcc-python-setup-py"
     compiler: gcc
@@ -137,7 +243,23 @@ jobs:
     compiler: gcc
     group: edge
     python: 3.6
+  - name: "Linux with gcc and Python 3 module (setup.py) on ppc64le"
+    arch: ppc64le
+    env:
+    - TARGET="linux-gcc-python-setup-py"
+    compiler: gcc
+    group: edge
+    python: 3.6
   - name: "Linux with gcc and shared libraries"
+    env:
+    - CONFIGURE_OPTIONS=""
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-shared"
+    compiler: gcc
+    group: edge
+  - name: "Linux with gcc and shared libraries on ppc64le"
+    arch: ppc64le
     env:
     - CONFIGURE_OPTIONS=""
     - CFLAGS="--coverage"
@@ -153,7 +275,25 @@ jobs:
     - TARGET="linux-gcc-shared-wide-character-type"
     compiler: gcc
     group: edge
+  - name: "Linux with gcc, shared libraries and wide character type (wchar_t) support on ppc64le"
+    arch: ppc64le
+    env:
+    - CONFIGURE_OPTIONS="--enable-wide-character-type"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-shared-wide-character-type"
+    compiler: gcc
+    group: edge
   - name: "Linux with gcc and static executables support"
+    env:
+    - CONFIGURE_OPTIONS="--enable-static-executables=yes --enable-multi-threading-support=no"
+    - CFLAGS="--coverage"
+    - LDFLAGS="--coverage"
+    - TARGET="linux-gcc-static-executables"
+    compiler: gcc
+    group: edge
+  - name: "Linux with gcc and static executables support on ppc64le"
+    arch: ppc64le
     env:
     - CONFIGURE_OPTIONS="--enable-static-executables=yes --enable-multi-threading-support=no"
     - CFLAGS="--coverage"
